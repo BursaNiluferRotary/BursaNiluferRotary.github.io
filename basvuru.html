@@ -117,13 +117,20 @@
     .choices label { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-weight: 400; }
     .choices input { margin: 0; accent-color: var(--accent); }
 
-    .uploads { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .uploads .field { display: flex; flex-direction: column; }
-    /* Labels fill the row height with text at the bottom, so boxes line up when a label wraps */
-    .uploads label { flex: 1; display: flex; align-items: flex-end; font-weight: 400; }
+    /* Each upload spans three shared rows (label, box, notes), so boxes in a pair line up
+       even when a label wraps or extra notes follow one of them */
+    .uploads { display: grid; grid-template-columns: 1fr 1fr; column-gap: 1rem; }
+    .uploads > .field { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; margin-bottom: 1rem; }
+    .uploads > .field > label { align-self: end; font-weight: 400; }
+    .returning .uploads > .field { grid-column: 1 / -1; }
+    .upload-note { margin: 0; font-size: 0.875rem; color: var(--muted); }
+    .upload-group { margin-top: 0.75rem; }
+    .new-student { margin-top: 0.625rem; }
+    .new-student + .upload-note { margin: 0.125rem 0 0 1.75rem; }
+    .upload-group legend { margin-bottom: 0.625rem; font-size: 0.9375rem; color: var(--accent); }
     .upload {
       position: relative;
-      padding: 1.25rem 1rem;
+      padding: 0.875rem 0.75rem;
       text-align: center;
       background: var(--bg);
       border: 2px dashed var(--border);
@@ -134,6 +141,8 @@
     .upload.has-file { border-style: solid; }
     .upload:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
     .upload:has(input:user-invalid), .upload:has([aria-invalid="true"]) { border-color: var(--err); }
+    .upload:has(input:disabled) { opacity: 0.5; border-color: var(--border); }
+    .upload input:disabled { cursor: not-allowed; }
     .upload-text { display: block; font-weight: 600; color: var(--accent); overflow-wrap: anywhere; }
     .upload-hint { display: block; font-size: 0.875rem; color: var(--muted); }
 
@@ -194,7 +203,7 @@
     <div class="accent" aria-hidden="true"></div>
     <h1>Bursa Nilüfer Rotary Kulübü</h1>
     <p class="subtitle">Öğrenci Burs Bilgi Platformu</p>
-    <p class="intro">Burs gecikmesi yaşanmaması için aşağıdaki bilgileri eksiksiz doldurmanız gerekmektedir.</p>
+    <p class="intro">Burs gecikmesi yaşanmaması için aşağıdaki bilgileri eksiksiz doldurmanız gerekmektedir. Belgelerinizi lütfen yalnızca bu form aracılığıyla iletiniz; e-posta, WhatsApp veya diğer platformlar üzerinden gönderilen belgeler değerlendirmeye alınmamaktadır.</p>
 
     <noscript><p class="notice form-error">Formu gönderebilmek için tarayıcınızda JavaScript'in açık olması gerekir.</p></noscript>
 
@@ -294,7 +303,7 @@
       </div>
 
       <fieldset class="field">
-        <legend>Geçen sene Rotary Bursu aldınız mı?</legend>
+        <legend>Geçen sene Nilüfer Rotary Bursu aldınız mı?</legend>
         <div class="choices">
           <label><input type="radio" name="fi-radio-gecen_sene_rotary_bursu" value="Evet" required> Evet</label>
           <label><input type="radio" name="fi-radio-gecen_sene_rotary_bursu" value="Hayır" required> Hayır</label>
@@ -302,46 +311,138 @@
         <span class="field-error" hidden></span>
       </fieldset>
 
-      <fieldset class="full">
+      <!-- Which documents are required depends on the "Geçen sene Nilüfer Rotary Bursu aldınız mı?" answer (see the script) -->
+      <fieldset class="full" id="dosyalar">
         <legend>Gerekli Dosyalar</legend>
-        <div class="uploads">
-          <div class="field">
-            <label for="transkript">Transkript</label>
-            <div class="upload">
-              <input id="transkript" name="fi-file-transkript" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="transkript-bilgi">
-              <span class="upload-text" aria-hidden="true">Dosya seçin veya buraya sürükleyin</span>
-              <span class="upload-hint" id="transkript-bilgi">PDF, JPG veya PNG (en fazla 1 MB)</span>
+        <p class="upload-note" id="dosya-istemi">Gerekli dosyalar, "Geçen sene Nilüfer Rotary Bursu aldınız mı?" sorusunu yanıtladığınızda burada görünecektir.</p>
+        <p class="upload-note" id="dosya-kurali" hidden>Tüm belgeler PDF, JPG veya PNG biçiminde olmalı; her dosya en fazla 1 MB olabilir.</p>
+
+        <fieldset class="upload-group" hidden>
+          <legend>e-Devlet'ten alınanlar</legend>
+          <div class="uploads">
+            <div class="field">
+              <label for="ogrenci-belgesi">Öğrenci Belgesi</label>
+              <div class="upload">
+                <input id="ogrenci-belgesi" name="fi-file-ogrenci_belgesi" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
+                <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
+              </div>
+              <span class="field-error" hidden></span>
             </div>
-            <span class="field-error" hidden></span>
-          </div>
-          <div class="field">
-            <label for="kimlik">Kimlik</label>
-            <div class="upload">
-              <input id="kimlik" name="fi-file-kimlik" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="kimlik-bilgi">
-              <span class="upload-text" aria-hidden="true">Dosya seçin veya buraya sürükleyin</span>
-              <span class="upload-hint" id="kimlik-bilgi">PDF, JPG veya PNG (en fazla 1 MB)</span>
+            <div class="field" data-always>
+              <label for="adli-sicil">Adli Sicil Kaydı</label>
+              <div class="upload">
+                <input id="adli-sicil" name="fi-file-adli_sicil" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
+                <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
+              </div>
+              <span class="field-error" hidden></span>
             </div>
-            <span class="field-error" hidden></span>
-          </div>
-          <div class="field">
-            <label for="adli-sicil">Adli Sicil Kaydı (e-Devlet'ten alınmış)</label>
-            <div class="upload">
-              <input id="adli-sicil" name="fi-file-adli_sicil" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="adli-sicil-bilgi">
-              <span class="upload-text" aria-hidden="true">Dosya seçin veya buraya sürükleyin</span>
-              <span class="upload-hint" id="adli-sicil-bilgi">PDF, JPG veya PNG (en fazla 1 MB)</span>
+            <div class="field">
+              <label for="nufus-kayit">Nüfus Kayıt Örneği</label>
+              <div class="upload">
+                <input id="nufus-kayit" name="fi-file-nufus_kayit_ornegi" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
+                <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
+              </div>
+              <span class="field-error" hidden></span>
             </div>
-            <span class="field-error" hidden></span>
-          </div>
-          <div class="field">
-            <label for="ogrenci-belgesi">Öğrenci Belgesi (e-Devlet'ten alınmış)</label>
-            <div class="upload">
-              <input id="ogrenci-belgesi" name="fi-file-ogrenci_belgesi" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="ogrenci-belgesi-bilgi">
-              <span class="upload-text" aria-hidden="true">Dosya seçin veya buraya sürükleyin</span>
-              <span class="upload-hint" id="ogrenci-belgesi-bilgi">PDF, JPG veya PNG (en fazla 1 MB)</span>
+            <div class="field">
+              <label for="yerlesim-yeri">Yerleşim Yeri ve Diğer Adres Belgesi</label>
+              <div class="upload">
+                <input id="yerlesim-yeri" name="fi-file-yerlesim_yeri_belgesi" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
+                <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
+              </div>
+              <span class="field-error" hidden></span>
             </div>
-            <span class="field-error" hidden></span>
+            <div class="field">
+              <label for="sgk">Anne ve Babanın SGK Hizmet Dökümü</label>
+              <div class="upload">
+                <input id="sgk" name="fi-file-sgk_hizmet_dokumu[]" type="file" accept=".pdf,.jpg,.jpeg,.png" multiple required data-rule="dosya" data-max-files="2" aria-describedby="dosya-kurali sgk-bilgi">
+                <span class="upload-text" aria-hidden="true">Dosyaları seçin veya sürükleyin</span>
+                <span class="upload-hint" id="sgk-bilgi">Anne ve baba için en fazla 2 dosya</span>
+              </div>
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field">
+              <label for="tapu">Anne ve Babanın Tapu Bilgileri Sorgulaması</label>
+              <div class="upload">
+                <input id="tapu" name="fi-file-tapu_sorgulama[]" type="file" accept=".pdf,.jpg,.jpeg,.png" multiple required data-rule="dosya" data-max-files="2" aria-describedby="dosya-kurali tapu-bilgi">
+                <span class="upload-text" aria-hidden="true">Dosyaları seçin veya sürükleyin</span>
+                <span class="upload-hint" id="tapu-bilgi">Anne ve baba için en fazla 2 dosya</span>
+              </div>
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field full">
+              <label for="arac">Araç Kaydı Sorgulaması</label>
+              <div class="upload">
+                <input id="arac" name="fi-file-arac_kaydi" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
+                <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
+              </div>
+              <span class="field-error" hidden></span>
+            </div>
           </div>
-        </div>
+        </fieldset>
+
+        <fieldset class="upload-group" hidden>
+          <legend>Diğer belgeler</legend>
+          <div class="uploads">
+            <div class="field">
+              <label for="dilekce">Burs Talep Dilekçesi</label>
+              <div class="upload">
+                <input id="dilekce" name="fi-file-burs_talep_dilekcesi" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
+                <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
+              </div>
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field">
+              <label for="beyan">Başka Burs Almadığına Dair Beyan</label>
+              <div class="upload">
+                <input id="beyan" name="fi-file-baska_burs_beyani" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
+                <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
+              </div>
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field">
+              <label for="kimlik">Kimlik Kartı Fotokopisi</label>
+              <div class="upload">
+                <input id="kimlik" name="fi-file-kimlik" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
+                <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
+              </div>
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field">
+              <label for="osym">ÖSYM Yerleştirme Sonuç Belgesi</label>
+              <div class="upload">
+                <input id="osym" name="fi-file-osym_yerlestirme" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
+                <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
+              </div>
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field" data-always>
+              <label for="transkript">Transkript (Üniversite Not Döküm Belgesi)</label>
+              <div class="upload">
+                <input id="transkript" name="fi-file-transkript" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
+                <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
+              </div>
+              <div>
+                <span class="field-error" hidden></span>
+                <div id="yeni-kayit-secenegi">
+                  <label class="consent new-student">
+                    <input type="checkbox" id="yeni-kayit" name="fi-checkbox-yeni_kayit" value="Evet" aria-describedby="yeni-kayit-notu">
+                    <span>Yeni kayıt (henüz transkriptim yok)</span>
+                  </label>
+                  <p class="upload-note" id="yeni-kayit-notu">ÖSYM Yerleştirme Sonuç Belgesine göre yeni yerleşmiş olmalısınız.</p>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label for="dekont">Banka Dekontu</label>
+              <div class="upload">
+                <input id="dekont" name="fi-file-banka_dekontu" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
+                <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
+              </div>
+              <span class="field-error" hidden></span>
+            </div>
+          </div>
+        </fieldset>
       </fieldset>
 
       <!-- Before going live: have this text reviewed by someone who knows KVKK -->
@@ -355,18 +456,19 @@
 
           <h2>2. İşlenen kişisel veriler</h2>
           <ul>
-            <li>Kimlik: adı, soyadı, TC kimlik numarası ve kimlik belgesi görüntüsü</li>
-            <li>İletişim: e-posta adresi ve telefon numarası</li>
-            <li>Finans: IBAN</li>
-            <li>Eğitim: üniversite, bölüm, sınıf, transkript ve öğrenci belgesi</li>
+            <li>Kimlik: adı, soyadı, TC kimlik numarası, kimlik kartı fotokopisi ve nüfus kayıt örneği</li>
+            <li>İletişim: e-posta adresi, telefon numarası ve yerleşim yeri adresi</li>
+            <li>Finans ve varlık: IBAN, banka dekontu ve araç kaydı sorgulaması</li>
+            <li>Eğitim: üniversite, bölüm, sınıf, transkript, öğrenci belgesi ve ÖSYM yerleştirme sonuç belgesi</li>
+            <li>Aile: nüfus kayıt örneğinde yer alan aile bireylerinin bilgileri ile anne ve babanızın SGK hizmet dökümü ve tapu bilgileri</li>
             <li>Ceza mahkûmiyeti ve güvenlik tedbirleri (özel nitelikli kişisel veri): adli sicil kaydı</li>
-            <li>Burs geçmişi: geçen yıl Rotary bursu alıp almadığınız</li>
+            <li>Burs geçmişi ve beyanlar: geçen yıl Nilüfer Rotary Bursu alıp almadığınız, burs talep dilekçesi ve başka burs almadığınıza dair beyan</li>
             <li>İşlem güvenliği ve teknik kayıtlar: formun gönderildiği zaman, IP adresi, tarayıcı bilgisi, yönlendiren sayfa, IP adresinden belirlenen yaklaşık konum (ülke ve şehir) ve sayfa bağlantısında yer alıyorsa kampanya parametreleri (ör. UTM)</li>
           </ul>
-          <p>Kimlik belgenizde din veya kan grubu gibi özel nitelikli kişisel veriler yer alıyorsa (ör. eski tip nüfus cüzdanı), lütfen belgeyi yüklemeden önce bu alanları kapatınız.</p>
+          <p>Yüklediğiniz belgelerde din veya kan grubu gibi özel nitelikli kişisel veriler yer alıyorsa (ör. nüfus kayıt örneğindeki din bilgisi veya eski tip nüfus cüzdanı), lütfen yüklemeden önce bu alanları kapatınız. Anne ve babanıza ait belgeleri yüklemeden önce onları bu metin hakkında bilgilendiriniz.</p>
 
           <h2>3. İşleme amaçları</h2>
-          <p>Kişisel verileriniz; burs bilgilerinizin alınması ve değerlendirilmesi, kimliğinizin ve öğrenim durumunuzun doğrulanması, burs ödemelerinin yapılması ve kayıt altına alınması, burs süreciyle ilgili sizinle iletişim kurulması ve Kulübün tabi olduğu mevzuattan doğan yükümlülüklerin yerine getirilmesi amaçlarıyla işlenir. Adli sicil kaydınız ise yalnızca burs için uygunluğunuzun değerlendirilmesi amacıyla işlenir.</p>
+          <p>Kişisel verileriniz; burs başvurunuzun ve ailenizin maddi durumunun değerlendirilmesi, kimliğinizin ve öğrenim durumunuzun doğrulanması, burs ödemelerinin yapılması ve kayıt altına alınması, burs süreciyle ilgili sizinle iletişim kurulması ve Kulübün tabi olduğu mevzuattan doğan yükümlülüklerin yerine getirilmesi amaçlarıyla işlenir. Adli sicil kaydınız ise yalnızca burs için uygunluğunuzun değerlendirilmesi amacıyla işlenir.</p>
 
           <h2>4. Toplama yöntemi ve hukuki sebep</h2>
           <p>Kişisel verileriniz bu internet sitesindeki form aracılığıyla elektronik ortamda toplanır ve KVKK'nın 5. maddesinin 2. fıkrasında yer alan (c) bir sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması, (ç) veri sorumlusunun hukuki yükümlülüğünü yerine getirebilmesi için zorunlu olması ve (f) temel hak ve özgürlüklerinize zarar vermemek kaydıyla Kulübün meşru menfaatleri için zorunlu olması hukuki sebeplerine dayanılarak işlenir. Özel nitelikli kişisel veri olan adli sicil kaydınızın işlenmesi KVKK'nın 6. maddesinin 3. fıkrası, verilerinizin yurt dışına aktarılması ise KVKK'nın 9. maddesi uyarınca açık rızanıza dayanır.</p>
@@ -376,7 +478,7 @@
 
           <h2>6. Yurt dışına aktarım</h2>
           <p>Formda paylaştığınız bilgiler ve yüklediğiniz belgeler, form altyapısını sağlayan Forminit (UXPLUS LTD, Birleşik Krallık) aracılığıyla işlenir ve Avrupa Birliği'nde (İrlanda) bulunan Amazon Web Services sunucularında şifrelenerek saklanır; ayrıca Kulübün e-posta hesabına bildirim olarak iletilebilir. Bu internet sitesi GitHub, Inc. (ABD) altyapısında barındırılır ve GitHub, siteyi ziyaret edenlerin IP adreslerini güvenlik amacıyla kaydeder.</p>
-          <p>Bu ülkelerde kişisel verilere Türkiye'deki ile aynı düzeyde koruma sağlanmayabilir. Aktarımın muhtemel riskleri arasında yabancı kamu makamlarının verilere erişebilmesi ve haklarınızı yurt dışındaki hizmet sağlayıcılara karşı kullanmanın daha zor olması yer alır. Açık rıza vermek istemezseniz bilgilerinizi ve belgelerinizi Kulübe doğrudan iletebilirsiniz.</p>
+          <p>Bu ülkelerde kişisel verilere Türkiye'deki ile aynı düzeyde koruma sağlanmayabilir. Aktarımın muhtemel riskleri arasında yabancı kamu makamlarının verilere erişebilmesi ve haklarınızı yurt dışındaki hizmet sağlayıcılara karşı kullanmanın daha zor olması yer alır. Açık rıza vermek istemezseniz bilgilerinizi ve belgelerinizi yukarıdaki Kulüp adresine elden teslim edebilirsiniz.</p>
 
           <h2>7. Saklama süresi</h2>
           <p>Kişisel verileriniz, işleme amaçlarının gerektirdiği süre ve ilgili mevzuatta öngörülen saklama süreleri boyunca saklanır; bu sürelerin sonunda silinir, yok edilir veya anonim hâle getirilir.</p>
@@ -490,11 +592,14 @@
         return [...digits].reduce((rest, c) => (rest * 10 + Number(c)) % 97, 0) === 1;
       };
       const fileProblem = input => {
-        const file = input.files[0];
-        if (!file) return '';
-        const typeOk = /\.(pdf|jpe?g|png)$/i.test(file.name) || ['application/pdf', 'image/jpeg', 'image/png'].includes(file.type);
-        if (!typeOk) return 'Lütfen PDF, JPG veya PNG dosyası seçin.';
-        if (file.size > MAX_MB * 1024 * 1024) return `Dosya en fazla ${MAX_MB} MB olabilir. Lütfen dosyayı küçültüp tekrar deneyin.`;
+        const files = [...input.files];
+        const maxFiles = Number(input.dataset.maxFiles || 1);
+        if (files.length > maxFiles) return `En fazla ${maxFiles} dosya seçebilirsiniz.`;
+        for (const file of files) {
+          const typeOk = /\.(pdf|jpe?g|png)$/i.test(file.name) || ['application/pdf', 'image/jpeg', 'image/png'].includes(file.type);
+          if (!typeOk) return 'Lütfen PDF, JPG veya PNG dosyası seçin.';
+          if (file.size > MAX_MB * 1024 * 1024) return `Her dosya en fazla ${MAX_MB} MB olabilir. Lütfen dosyayı küçültüp tekrar deneyin.`;
+        }
         return '';
       };
 
@@ -554,18 +659,48 @@
         toggle();
       });
 
-      // Upload areas: show the chosen file and highlight while dragging
+      // Required documents follow "Geçen sene Nilüfer Rotary Bursu aldınız mı?":
+      // "Hayır" asks for every document, "Evet" only for those marked data-always (adli sicil, transkript).
+      // "Yeni kayıt" lets first-semester students skip the transcript, but not last year's scholars.
+      const docs = document.getElementById('dosyalar');
+      const newStudent = document.getElementById('yeni-kayit');
+      const transcript = document.getElementById('transkript');
+      const syncDocuments = () => {
+        const answer = form.querySelector('[name="fi-radio-gecen_sene_rotary_bursu"]:checked')?.value;
+        const returning = answer === 'Evet';
+        document.getElementById('dosya-istemi').hidden = Boolean(answer);
+        docs.querySelectorAll('#dosya-kurali, .upload-group').forEach(el => { el.hidden = !answer; });
+        docs.classList.toggle('returning', returning);
+        document.getElementById('yeni-kayit-secenegi').hidden = returning;
+        newStudent.disabled = returning;
+        if (returning) newStudent.checked = false;
+        docs.querySelectorAll('.uploads > .field').forEach(field => {
+          const input = field.querySelector('input[type="file"]');
+          const shown = Boolean(answer) && (!returning || 'always' in field.dataset);
+          field.hidden = !shown;
+          input.disabled = !shown || (input === transcript && newStudent.checked); // disabled uploads are neither required nor sent
+          if (input.disabled) {
+            field.querySelector('.field-error').hidden = true;
+            input.removeAttribute('aria-invalid');
+          }
+        });
+      };
+      form.querySelectorAll('[name="fi-radio-gecen_sene_rotary_bursu"]').forEach(radio => radio.addEventListener('change', syncDocuments));
+      newStudent.addEventListener('change', syncDocuments);
+      syncDocuments();
+
+      // Upload areas: show the chosen file(s) and highlight while dragging
       form.querySelectorAll('.upload').forEach(zone => {
         const input = zone.querySelector('input');
         const text = zone.querySelector('.upload-text');
         const empty = text.textContent;
         input.addEventListener('change', () => {
-          const file = input.files[0];
-          zone.classList.toggle('has-file', Boolean(file));
-          if (!file) { text.textContent = empty; return; }
-          const kb = file.size / 1024;
+          const files = [...input.files];
+          zone.classList.toggle('has-file', files.length > 0);
+          if (!files.length) { text.textContent = empty; return; }
+          const kb = files.reduce((total, file) => total + file.size, 0) / 1024;
           const size = kb < 1024 ? `${Math.ceil(kb)} KB` : `${(kb / 1024).toLocaleString('tr-TR', { maximumFractionDigits: 1 })} MB`;
-          text.textContent = `${file.name} (${size})`;
+          text.textContent = files.length === 1 ? `${files[0].name} (${size})` : `${files.length} dosya seçildi (${size})`;
         });
         input.addEventListener('dragenter', () => zone.classList.add('dragging'));
         ['dragleave', 'drop'].forEach(type => input.addEventListener(type, () => zone.classList.remove('dragging')));
