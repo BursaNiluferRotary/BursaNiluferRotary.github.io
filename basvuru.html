@@ -170,6 +170,8 @@
     .kvkk-text .updated { margin: 1rem 0 0; color: var(--muted); }
     .kvkk-text a { color: var(--accent); overflow-wrap: anywhere; }
 
+    .guardian { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1rem; }
+
     .consent { display: flex; align-items: flex-start; gap: 0.625rem; margin: 0; font-weight: 400; }
     .consent input { flex: none; width: 1.125rem; height: 1.125rem; margin: 0.15rem 0 0; accent-color: var(--accent); }
 
@@ -229,7 +231,7 @@
     @media (max-width: 600px) {
       main { padding-top: 2.5rem; }
       form { padding: 1.25rem; }
-      form, .uploads { grid-template-columns: 1fr; }
+      form, .uploads, .guardian { grid-template-columns: 1fr; }
       button { justify-self: stretch; }
       .brand img { height: 3rem; }
       .contact { font-size: 0.8125rem; }
@@ -503,15 +505,7 @@
         <fieldset class="upload-group" hidden>
           <legend>Diğer belgeler</legend>
           <div class="uploads">
-            <div class="field">
-              <label for="dilekce">Burs Talep Dilekçesi</label>
-              <div class="upload">
-                <input id="dilekce" name="fi-file-burs_talep_dilekcesi" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
-                <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
-              </div>
-              <span class="field-error" hidden></span>
-            </div>
-            <div class="field">
+            <div class="field full">
               <label for="beyan">Başka Burs Almadığına Dair Beyan</label>
               <div class="upload">
                 <input id="beyan" name="fi-file-baska_burs_beyani" type="file" accept=".pdf,.jpg,.jpeg,.png" required data-rule="dosya" aria-describedby="dosya-kurali">
@@ -594,16 +588,17 @@
             <li>Eğitim: üniversite, bölüm, sınıf, genel not ortalaması, transkript, öğrenci belgesi ve ÖSYM yerleştirme sonuç belgesi</li>
             <li>Aile: nüfus kayıt örneğinde yer alan aile bireylerinin bilgileri ile anne ve babanızın çalışma durumu, gelir belgeleri (SGK hizmet dökümü veya maaş bordrosu, gelir vergisi beyannamesi, emekli aylık bilgisi ya da SGK kayıt belgesi), yerleşim yeri, tapu ve araç kaydı bilgileri</li>
             <li>Ceza mahkûmiyeti ve güvenlik tedbirleri (özel nitelikli kişisel veri): adli sicil kaydı</li>
-            <li>Burs geçmişi ve beyanlar: geçen yıl Nilüfer Rotary Bursu alıp almadığınız, burs talep dilekçesi, başka burs almadığınıza dair beyan, başvuru beyanınız ve 18 yaşını doldurduğunuza dair beyanınız</li>
+            <li>Burs geçmişi ve beyanlar: geçen yıl Nilüfer Rotary Bursu alıp almadığınız, başka burs almadığınıza dair beyan, başvuru beyanınız ve 18 yaşını doldurup doldurmadığınız</li>
+            <li>Veli (18 yaşından küçük başvurularda): başvuruyu onaylayan velinin adı soyadı, yakınlık derecesi, TC kimlik numarası, telefon numarası, onay beyanı ve imzası</li>
             <li>İşlem güvenliği ve teknik kayıtlar: formun gönderildiği zaman, IP adresi, tarayıcı bilgisi, yönlendiren sayfa, IP adresinden belirlenen yaklaşık konum (ülke ve şehir) ve sayfa bağlantısında yer alıyorsa kampanya parametreleri (ör. UTM)</li>
           </ul>
           <p>Yüklediğiniz belgelerde din veya kan grubu gibi özel nitelikli kişisel veriler yer alıyorsa (ör. nüfus kayıt örneğindeki din bilgisi veya eski tip nüfus cüzdanı), lütfen yüklemeden önce bu alanları kapatınız. Anne ve babanıza ait belgeleri yüklemeden önce onları bu metin hakkında bilgilendiriniz.</p>
 
           <h2>3. İşleme amaçları</h2>
-          <p>Kişisel verileriniz; burs başvurunuzun ve ailenizin maddi durumunun değerlendirilmesi, kimliğinizin ve öğrenim durumunuzun doğrulanması, burs ödemelerinin yapılması ve kayıt altına alınması, burs süreciyle ilgili sizinle iletişim kurulması ve Kulübün tabi olduğu mevzuattan doğan yükümlülüklerin yerine getirilmesi amaçlarıyla işlenir. Adli sicil kaydınız ise yalnızca burs için uygunluğunuzun değerlendirilmesi amacıyla işlenir.</p>
+          <p>Kişisel verileriniz; burs başvurunuzun ve ailenizin maddi durumunun değerlendirilmesi, kimliğinizin ve öğrenim durumunuzun doğrulanması, burs ödemelerinin yapılması ve kayıt altına alınması, burs süreciyle ilgili sizinle iletişim kurulması, 18 yaşından küçük başvurularda veli onayının alınması ve Kulübün tabi olduğu mevzuattan doğan yükümlülüklerin yerine getirilmesi amaçlarıyla işlenir. Adli sicil kaydınız ise yalnızca burs için uygunluğunuzun değerlendirilmesi amacıyla işlenir.</p>
 
           <h2>4. Toplama yöntemi ve hukuki sebep</h2>
-          <p>Kişisel verileriniz bu internet sitesindeki form aracılığıyla elektronik ortamda toplanır ve KVKK'nın 5. maddesinin 2. fıkrasında yer alan (c) bir sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması, (ç) veri sorumlusunun hukuki yükümlülüğünü yerine getirebilmesi için zorunlu olması ve (f) temel hak ve özgürlüklerinize zarar vermemek kaydıyla Kulübün meşru menfaatleri için zorunlu olması hukuki sebeplerine dayanılarak işlenir. Özel nitelikli kişisel veri olan adli sicil kaydınızın işlenmesi KVKK'nın 6. maddesinin 3. fıkrası, verilerinizin yurt dışına aktarılması ise KVKK'nın 9. maddesi uyarınca açık rızanıza dayanır.</p>
+          <p>Kişisel verileriniz bu internet sitesindeki form aracılığıyla elektronik ortamda toplanır ve KVKK'nın 5. maddesinin 2. fıkrasında yer alan (c) bir sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması, (ç) veri sorumlusunun hukuki yükümlülüğünü yerine getirebilmesi için zorunlu olması ve (f) temel hak ve özgürlüklerinize zarar vermemek kaydıyla Kulübün meşru menfaatleri için zorunlu olması hukuki sebeplerine dayanılarak işlenir. Özel nitelikli kişisel veri olan adli sicil kaydınızın işlenmesi KVKK'nın 6. maddesinin 3. fıkrası, verilerinizin yurt dışına aktarılması ise KVKK'nın 9. maddesi uyarınca açık rızanıza dayanır. 18 yaşından küçük başvurularda açık rıza, veli sıfatıyla anne, baba veya yasal vasi tarafından verilir.</p>
 
           <h2>5. Aktarım</h2>
           <p>Verilerinize yalnızca burs sürecini yürüten yetkili Kulüp üyeleri erişir. Verileriniz, yukarıdaki amaçlarla sınırlı olarak burs ödemelerinin yapılması için bankalarla ve talep edilmesi hâlinde yetkili kamu kurum ve kuruluşlarıyla paylaşılabilir.</p>
@@ -634,13 +629,16 @@
         </div>
       </details>
 
-      <div class="field full">
-        <label class="consent">
-          <input type="checkbox" name="fi-checkbox-18_yas_ustu" value="Evet" required data-missing="Başvuru yapabilmek için 18 yaşını doldurmuş olmanız gerekmektedir.">
-          <span>18 yaşını doldurduğumu beyan ederim.</span>
-        </label>
+      <!-- "Hayır" opens the Veli Onayı section at the end of the form (see the script) -->
+      <fieldset class="field full">
+        <legend>18 yaşını doldurdunuz mu?</legend>
+        <div class="choices">
+          <label><input type="radio" name="fi-radio-18_yasini_doldurdu" value="Evet" required> Evet</label>
+          <label><input type="radio" name="fi-radio-18_yasini_doldurdu" value="Hayır" required> Hayır. Başvurumu velim onaylayacak.</label>
+        </div>
+        <p class="field-note" id="yas-notu" hidden>Aşağıdaki açık rıza onaylarını ve formun sonundaki "Veli Onayı" bölümünü annenizin, babanızın veya yasal vasinizin vermesi gerekir.</p>
         <span class="field-error" hidden></span>
-      </div>
+      </fieldset>
 
       <div class="field full">
         <label class="consent">
@@ -673,6 +671,49 @@
         <input id="imza" name="fi-text-imza" type="text" autocomplete="name" required data-rule="imza">
         <span class="field-error" hidden></span>
       </div>
+
+      <!-- Applicants under 18: a parent or legal guardian approves and signs. A disabled fieldset is neither validated nor sent. -->
+      <fieldset class="full guardian" id="veli-onayi" hidden disabled>
+        <legend>Veli Onayı</legend>
+        <p class="upload-note full">18 yaşından küçük başvurularda bu bölüm öğrencinin annesi, babası veya yasal vasisi tarafından doldurulur.</p>
+        <div class="field">
+          <label for="veli-ad">Velinin Adı Soyadı</label>
+          <input id="veli-ad" name="fi-text-veli_ad_soyad" type="text" autocomplete="off" required>
+          <span class="field-error" hidden></span>
+        </div>
+        <div class="field">
+          <label for="veli-yakinlik">Yakınlık Derecesi</label>
+          <select id="veli-yakinlik" name="fi-select-veli_yakinlik" required>
+            <option value="" selected disabled>Seçiniz</option>
+            <option>Anne</option>
+            <option>Baba</option>
+            <option>Yasal vasi</option>
+          </select>
+          <span class="field-error" hidden></span>
+        </div>
+        <div class="field">
+          <label for="veli-tc">Velinin TC Kimlik Numarası</label>
+          <input id="veli-tc" name="fi-text-veli_tc_kimlik_no" type="text" inputmode="numeric" pattern="[1-9]\d{10}" autocomplete="off" required data-rule="veli_tc">
+          <span class="field-error" hidden></span>
+        </div>
+        <div class="field">
+          <label for="veli-telefon">Velinin Telefon Numarası</label>
+          <input id="veli-telefon" name="fi-text-veli_telefon" type="tel" placeholder="0(5XX)XXX-XX-XX" pattern="0\(5\d{2}\)\d{3}-\d{2}-\d{2}" autocomplete="off" required data-rule="telefon">
+          <span class="field-error" hidden></span>
+        </div>
+        <div class="field full">
+          <label class="consent">
+            <input type="checkbox" name="fi-checkbox-veli_onayi" value="Evet" required data-missing="Formu gönderebilmek için velinin başvuruyu onaylaması gerekmektedir.">
+            <span>Velisi olduğum öğrencinin bu burs başvurusunu onaylıyor ve destekliyorum. Formdaki bilgilerin doğru olduğunu, KVKK Aydınlatma Metni'ni okuduğumu ve formdaki açık rıza onaylarını veli sıfatıyla verdiğimi beyan ederim.</span>
+          </label>
+          <span class="field-error" hidden></span>
+        </div>
+        <div class="field full">
+          <label for="veli-imza">Veli İmzası (velinin adını ve soyadını yukarıdaki gibi yazın)</label>
+          <input id="veli-imza" name="fi-text-veli_imza" type="text" autocomplete="off" required data-rule="veli_imza">
+          <span class="field-error" hidden></span>
+        </div>
+      </fieldset>
 
       <!-- Honeypot field (Forminit rejects submissions where it has a value) -->
       <input type="hidden" name="_gotcha" style="display:none !important">
@@ -731,6 +772,8 @@
       applyFormat(phone, formatPhone);
       applyFormat(document.getElementById('iban'), formatIban);
       applyFormat(document.getElementById('tc'), formatTc);
+      applyFormat(document.getElementById('veli-telefon'), formatPhone);
+      applyFormat(document.getElementById('veli-tc'), formatTc);
 
       // GNO uses the Turkish decimal comma (3.25 → 3,25) and keeps only digits and the first comma
       const gno = document.getElementById('gno');
@@ -778,6 +821,9 @@
         return '';
       };
 
+      const normalizeName = value => value.toLocaleLowerCase('tr-TR').replace(/\s+/g, ' ').trim();
+      const sameName = (a, b) => normalizeName(a) === normalizeName(b);
+
       const rules = {
         iban: el => ibanValid(el.value) ? '' : 'Lütfen geçerli bir IBAN girin (TR ile başlayan 26 karakter).',
         tc: el => tcValid(el.value) ? '' : 'Lütfen geçerli bir TC Kimlik Numarası girin.',
@@ -792,12 +838,14 @@
             ? 'Not ortalaması 4 üzerinden en fazla 4,00 olabilir. Notunuz 100 üzerindense yanındaki seçimi "100 üzerinden" yapın.'
             : `Not ortalaması en fazla ${max === 4 ? '4,00' : '100'} olabilir.`;
         },
-        // The typed signature must match the Adı and Soyadı fields (Turkish-aware, ignoring case and extra spaces)
-        imza: el => {
-          const normalize = value => value.toLocaleLowerCase('tr-TR').replace(/\s+/g, ' ').trim();
-          const fullName = `${document.getElementById('ad').value} ${document.getElementById('soyad').value}`;
-          return normalize(el.value) === normalize(fullName) ? '' : 'Lütfen imza olarak adınızı ve soyadınızı yukarıda yazdığınız şekilde yazın.';
-        }
+        // A typed signature must match the name typed above it (Turkish-aware, ignoring case and extra spaces)
+        imza: el => sameName(el.value, `${document.getElementById('ad').value} ${document.getElementById('soyad').value}`)
+          ? '' : 'Lütfen imza olarak adınızı ve soyadınızı yukarıda yazdığınız şekilde yazın.',
+        veli_imza: el => sameName(el.value, document.getElementById('veli-ad').value)
+          ? '' : 'Lütfen imza olarak velinin adını ve soyadını yukarıda yazıldığı şekilde yazın.',
+        veli_tc: el => !tcValid(el.value) ? 'Lütfen geçerli bir TC Kimlik Numarası girin.'
+          : el.value === document.getElementById('tc').value ? 'Velinin TC kimlik numarası öğrencininkinden farklı olmalıdır.'
+          : ''
       };
 
       // Turkish error messages, shown under each field and in the browser's own warning
@@ -853,6 +901,22 @@
         select.addEventListener('change', toggle);
         toggle();
       });
+
+      // Applicants under 18 need a parent's or legal guardian's approval and signature
+      const guardian = document.getElementById('veli-onayi');
+      const ageAnswers = form.querySelectorAll('[name="fi-radio-18_yasini_doldurdu"]');
+      const syncGuardian = () => {
+        const minor = form.querySelector('[name="fi-radio-18_yasini_doldurdu"]:checked')?.value === 'Hayır';
+        document.getElementById('yas-notu').hidden = !minor;
+        guardian.hidden = !minor;
+        guardian.disabled = !minor;
+        if (!minor) {
+          guardian.querySelectorAll('.field-error').forEach(box => { box.hidden = true; });
+          guardian.querySelectorAll('[aria-invalid]').forEach(control => control.removeAttribute('aria-invalid'));
+        }
+      };
+      ageAnswers.forEach(radio => radio.addEventListener('change', syncGuardian));
+      syncGuardian();
 
       // Required documents follow "Geçen sene Nilüfer Rotary Bursu aldınız mı?":
       // "Hayır" asks for every document, "Evet" only for those marked data-always (adli sicil, transkript).
@@ -1005,6 +1069,9 @@
         // Forminit validates phone numbers as E.164: 0(532)123-45-67 is sent as +905321234567
         data.set('fi-sender-phone', '+90' + phone.value.replace(/\D/g, '').slice(1));
         data.set('fi-text-imza', document.getElementById('imza').value.replace(/\s+/g, ' ').trim());
+        if (!guardian.disabled) {
+          ['veli_ad_soyad', 'veli_imza'].forEach(name => data.set(`fi-text-${name}`, data.get(`fi-text-${name}`).replace(/\s+/g, ' ').trim()));
+        }
         // GNO is sent with two decimals: 3,5 → 3,50
         if (!gno.disabled) data.set('fi-text-gno', Number(gno.value.replace(',', '.')).toFixed(2).replace('.', ','));
 
