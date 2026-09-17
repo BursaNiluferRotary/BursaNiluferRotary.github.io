@@ -167,11 +167,21 @@
     .cta:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 
     .brand {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem 1.5rem;
       width: var(--page);
       margin-inline: auto;
       padding-bottom: 2rem;
     }
     .brand img { display: block; width: auto; height: 3.5rem; }
+
+    /* Contact stays at the bottom right, even when it wraps below the logo */
+    .contact { margin: 0 0 0 auto; font-size: 0.9375rem; color: var(--muted); text-align: right; }
+    .contact a { font-weight: 600; color: var(--blue); text-decoration: none; overflow-wrap: anywhere; }
+    .contact a:hover { text-decoration: underline; }
+    .contact a:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
 
     .sr-only {
       position: absolute;
@@ -189,6 +199,7 @@
       .stat { padding: 1.25rem 1rem 1.125rem; }
       .stat-label { font-size: 0.75rem; }
       .brand img { height: 3rem; }
+      .contact { font-size: 0.8125rem; }
     }
 
     @media (prefers-reduced-motion: no-preference) {
@@ -227,6 +238,7 @@
 
   <footer class="brand">
     <img src="RotaryMBS-Simple_CMYK-C.png" alt="Rotary" width="1774" height="667">
+    <p class="contact">İletişim: <a href="mailto:komite@niluferrotaryburs.com">komite@niluferrotaryburs.com</a></p>
   </footer>
 
   <script>
