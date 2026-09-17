@@ -17,8 +17,6 @@
       --azure: #0067c8;   /* Rotary azure */
       --on-accent: #ffffff;
       --gold: #f7a81b;    /* Rotary gold */
-      --ok-bg: #e6f4ea;
-      --ok-text: #1e6b3a;
       --err: #b3261e;
       --err-bg: #fce8e6;
     }
@@ -111,9 +109,15 @@
     }
     select { text-overflow: ellipsis; }
     input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    input:not([type="radio"], [type="checkbox"], [type="file"]):disabled, select:disabled { opacity: 0.55; cursor: not-allowed; }
     input:user-invalid, select:user-invalid, [aria-invalid="true"] { border-color: var(--err); }
 
-    .choices { display: flex; gap: 1.5rem; }
+    /* GNO value with its grading scale beside it */
+    .gno-input { display: flex; gap: 0.5rem; }
+    .gno-input input { flex: 1; min-width: 0; }
+    .gno-input select { flex: none; width: auto; }
+
+    .choices { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
     .choices label { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-weight: 400; }
     .choices input { margin: 0; accent-color: var(--accent); }
 
@@ -190,8 +194,6 @@
     .field-error { display: block; margin-top: 0.25rem; font-size: 0.875rem; color: var(--err); }
 
     .notice { margin: 0; padding: 0.75rem 1rem; border-radius: 10px; }
-    .notice:focus { outline: none; }
-    .success { background: var(--ok-bg); color: var(--ok-text); }
     .form-error { background: var(--err-bg); color: var(--err); }
     noscript .notice { margin-bottom: 1rem; }
 
@@ -339,11 +341,25 @@
         <span class="field-error" hidden></span>
       </div>
 
-      <fieldset class="field">
+      <!-- Some faculties (e.g. medicine) grade out of 100; "Yeni kayıt" below disables this field -->
+      <div class="field">
+        <label for="gno">Genel Not Ortalaması (GNO)</label>
+        <div class="gno-input">
+          <input id="gno" name="fi-text-gno" type="text" inputmode="decimal" placeholder="Örn. 3,25" autocomplete="off" required data-rule="gno" data-missing="Lütfen genel not ortalamanızı yazın." aria-describedby="gno-notu">
+          <select id="gno-sistemi" name="fi-select-gno_sistemi" aria-label="Not sistemi">
+            <option selected>4 üzerinden</option>
+            <option>100 üzerinden</option>
+          </select>
+        </div>
+        <p class="field-note" id="gno-notu" hidden></p>
+        <span class="field-error" hidden></span>
+      </div>
+
+      <fieldset class="field full">
         <legend>Geçen sene Nilüfer Rotary Bursu aldınız mı?</legend>
         <div class="choices">
           <label><input type="radio" name="fi-radio-gecen_sene_rotary_bursu" value="Evet" required> Evet</label>
-          <label><input type="radio" name="fi-radio-gecen_sene_rotary_bursu" value="Hayır" required> Hayır</label>
+          <label><input type="radio" name="fi-radio-gecen_sene_rotary_bursu" value="Hayır" required> Hayır. Yeni bursiyer başvurusu.</label>
         </div>
         <span class="field-error" hidden></span>
       </fieldset>
@@ -551,7 +567,7 @@
                 <div id="yeni-kayit-secenegi">
                   <label class="consent new-student">
                     <input type="checkbox" id="yeni-kayit" name="fi-checkbox-yeni_kayit" value="Evet" aria-describedby="yeni-kayit-notu">
-                    <span>Yeni kayıt (henüz transkriptim yok)</span>
+                    <span>Yeni kayıt (henüz transkriptim ve not ortalamam yok)</span>
                   </label>
                   <p class="upload-note" id="yeni-kayit-notu">ÖSYM Yerleştirme Sonuç Belgesine göre yeni yerleşmiş olmalısınız.</p>
                 </div>
@@ -575,7 +591,7 @@
             <li>Kimlik: adı, soyadı, TC kimlik numarası, kimlik kartı fotokopisi, vesikalık fotoğraf ve vukuatlı nüfus kayıt örneği</li>
             <li>İletişim: e-posta adresi, telefon numarası ve yerleşim yeri adresi</li>
             <li>Finans: IBAN ve banka dekontu</li>
-            <li>Eğitim: üniversite, bölüm, sınıf, transkript, öğrenci belgesi ve ÖSYM yerleştirme sonuç belgesi</li>
+            <li>Eğitim: üniversite, bölüm, sınıf, genel not ortalaması, transkript, öğrenci belgesi ve ÖSYM yerleştirme sonuç belgesi</li>
             <li>Aile: nüfus kayıt örneğinde yer alan aile bireylerinin bilgileri ile anne ve babanızın çalışma durumu, gelir belgeleri (SGK hizmet dökümü veya maaş bordrosu, gelir vergisi beyannamesi, emekli aylık bilgisi ya da SGK kayıt belgesi), yerleşim yeri, tapu ve araç kaydı bilgileri</li>
             <li>Ceza mahkûmiyeti ve güvenlik tedbirleri (özel nitelikli kişisel veri): adli sicil kaydı</li>
             <li>Burs geçmişi ve beyanlar: geçen yıl Nilüfer Rotary Bursu alıp almadığınız, burs talep dilekçesi, başka burs almadığınıza dair beyan, başvuru beyanınız ve 18 yaşını doldurduğunuza dair beyanınız</li>
@@ -614,7 +630,7 @@
           </ul>
           <p>Başvurularınızı yazılı olarak yukarıdaki adrese veya bu formda bildirdiğiniz e-posta adresinizden <a href="mailto:komite@niluferrotaryburs.com">komite@niluferrotaryburs.com</a> adresine iletebilirsiniz. Başvurunuz en geç otuz gün içinde ücretsiz olarak sonuçlandırılır. Açık rızanızı dilediğiniz zaman aynı yollarla geri alabilirsiniz.</p>
 
-          <p class="updated">Son güncelleme: 13 Eylül 2026</p>
+          <p class="updated">Son güncelleme: 17 Eylül 2026</p>
         </div>
       </details>
 
@@ -664,8 +680,6 @@
       <button type="submit" disabled>Gönder</button>
       <p class="notice form-error full" id="gonderim-hatasi" role="alert" hidden></p>
     </form>
-
-    <p class="notice success" id="gonderildi" role="status" tabindex="-1" hidden>Teşekkür ederiz. Bilgileriniz başarıyla gönderildi.</p>
   </main>
 
   <footer class="brand">
@@ -682,7 +696,6 @@
       const phone = document.getElementById('telefon');
       const button = form.querySelector('button[type="submit"]');
       const formError = document.getElementById('gonderim-hatasi');
-      const success = document.getElementById('gonderildi');
 
       // Formatting while typing: 0(5XX)XXX-XX-XX, TR IBAN in groups of four, 11-digit TC number
       const formatPhone = value => {
@@ -718,6 +731,21 @@
       applyFormat(phone, formatPhone);
       applyFormat(document.getElementById('iban'), formatIban);
       applyFormat(document.getElementById('tc'), formatTc);
+
+      // GNO uses the Turkish decimal comma (3.25 → 3,25) and keeps only digits and the first comma
+      const gno = document.getElementById('gno');
+      const gnoScale = document.getElementById('gno-sistemi');
+      const formatGno = value => {
+        const [whole, ...rest] = value.replace(/\./g, ',').replace(/[^\d,]/g, '').split(',');
+        return rest.length ? `${whole},${rest.join('')}` : whole;
+      };
+      gno.addEventListener('input', () => {
+        const value = formatGno(gno.value);
+        if (value === gno.value) return;
+        const caret = formatGno(gno.value.slice(0, gno.selectionStart)).length;
+        gno.value = value;
+        gno.setSelectionRange(caret, caret);
+      });
 
       // Checksums catch typos in the TC number and IBAN before they delay a payment
       const tcValid = value => {
@@ -755,6 +783,15 @@
         tc: el => tcValid(el.value) ? '' : 'Lütfen geçerli bir TC Kimlik Numarası girin.',
         telefon: el => /^0\(5\d{2}\)\d{3}-\d{2}-\d{2}$/.test(el.value) ? '' : 'Lütfen telefon numaranızı 0(5XX)XXX-XX-XX biçiminde girin.',
         dosya: fileProblem,
+        gno: el => {
+          const max = gnoScale.value.startsWith('100') ? 100 : 4;
+          const value = el.value.replace(',', '.');
+          if (!/^\d{1,3}(\.\d{1,2})?$/.test(value)) return `Lütfen not ortalamanızı ${max === 4 ? '3,25' : '78,50'} biçiminde yazın.`;
+          if (Number(value) <= max) return '';
+          return max === 4 && Number(value) <= 100
+            ? 'Not ortalaması 4 üzerinden en fazla 4,00 olabilir. Notunuz 100 üzerindense yanındaki seçimi "100 üzerinden" yapın.'
+            : `Not ortalaması en fazla ${max === 4 ? '4,00' : '100'} olabilir.`;
+        },
         // The typed signature must match the Adı and Soyadı fields (Turkish-aware, ignoring case and extra spaces)
         imza: el => {
           const normalize = value => value.toLocaleLowerCase('tr-TR').replace(/\s+/g, ' ').trim();
@@ -794,6 +831,10 @@
       form.addEventListener('invalid', e => check(e.target, true), true);
       button.addEventListener('click', () => {
         [...form.elements].forEach(el => check(el, false));
+      });
+      gnoScale.addEventListener('change', () => {
+        gno.placeholder = gnoScale.value.startsWith('100') ? 'Örn. 78,50' : 'Örn. 3,25';
+        if (gno.value) check(gno, true);
       });
 
       // Choosing "Diğer" in a dropdown reveals a required text box for the name
@@ -886,6 +927,20 @@
         newStudent.disabled = returning;
         if (returning) newStudent.checked = false;
 
+        // First-semester students have no GNO yet; the note points new applicants to "Yeni kayıt"
+        const gnoNote = document.getElementById('gno-notu');
+        gno.disabled = gnoScale.disabled = newStudent.checked;
+        gnoNote.textContent = newStudent.checked ? '"Yeni kayıt" seçtiğiniz için not ortalaması istenmez.'
+          : returning ? ''
+          : 'Henüz not ortalamanız yoksa (ilk yarıyıl) aşağıdaki "Yeni kayıt" seçeneğini işaretleyin.';
+        gnoNote.hidden = !gnoNote.textContent;
+        if (gno.disabled) {
+          gno.closest('.field').querySelector('.field-error').hidden = true;
+          gno.removeAttribute('aria-invalid');
+        } else {
+          check(gno, false); // refreshes a visible error after the answer changes
+        }
+
         docs.querySelectorAll('.uploads > .field').forEach(field => {
           const control = field.querySelector('input, select');
           const skipped = noLivingParent && ('family' in field.dataset || field === incomeField);
@@ -950,6 +1005,8 @@
         // Forminit validates phone numbers as E.164: 0(532)123-45-67 is sent as +905321234567
         data.set('fi-sender-phone', '+90' + phone.value.replace(/\D/g, '').slice(1));
         data.set('fi-text-imza', document.getElementById('imza').value.replace(/\s+/g, ' ').trim());
+        // GNO is sent with two decimals: 3,5 → 3,50
+        if (!gno.disabled) data.set('fi-text-gno', Number(gno.value.replace(',', '.')).toFixed(2).replace('.', ','));
 
         button.disabled = true;
         button.textContent = 'Gönderiliyor...';
@@ -966,9 +1023,8 @@
           showError(`${serverMessages[error.error] || 'Bilgileriniz gönderilemedi. Lütfen tekrar deneyin.'} (Hata: ${error.message})`);
           return;
         }
-        form.hidden = true;
-        success.hidden = false;
-        success.focus();
+        // replace() keeps the submitted form out of the back history
+        location.replace('tesekkurler.html');
       });
 
       button.disabled = false;
