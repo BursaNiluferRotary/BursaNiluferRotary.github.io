@@ -805,9 +805,10 @@
       };
       // File types follow each input's accept list (the photo takes JPG/PNG only)
       const MIME_TYPES = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png' };
-      const fileProblem = input => {
+      const acceptedExtensions = input => input.accept.split(',').map(ext => ext.trim().replace('.', '').toLowerCase());
+      const basicFileProblem = input => {
         const files = [...input.files];
-        const allowed = input.accept.split(',').map(ext => ext.trim().replace('.', '').toLowerCase());
+        const allowed = acceptedExtensions(input);
         const maxFiles = Number(input.dataset.maxFiles || 1);
         const minFiles = Number(input.dataset.minFiles || 0);
         if (files.length > maxFiles) return `En fazla ${maxFiles} dosya seçebilirsiniz.`;
@@ -820,6 +821,51 @@
         }
         return '';
       };
+
+      // Each chosen file is read into memory straight away. The upload then no longer depends on the
+      // phone's original (a Google Drive file, or one moved or re-downloaded later, makes the whole
+      // upload fail with "Failed to fetch"), and the first bytes show whether it really is a PDF, JPG or PNG.
+      const SIGNATURES = {
+        pdf: bytes => String.fromCharCode(...bytes.subarray(0, 1024)).includes('%PDF-'),
+        jpg: bytes => bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF,
+        png: bytes => [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A].every((byte, i) => bytes[i] === byte)
+      };
+      const readFiles = new Map(); // input → { source, copies, problem, done }
+      const readCopies = input => {
+        const source = [...input.files];
+        const entry = { source, copies: [], problem: '' };
+        readFiles.set(input, entry);
+        if (basicFileProblem(input)) {
+          entry.done = Promise.resolve();
+          return entry;
+        }
+        const allowed = acceptedExtensions(input).map(ext => ext === 'jpeg' ? 'jpg' : ext);
+        const kind = allowed.includes('pdf') ? 'PDF, JPG veya PNG dosyası' : 'JPG veya PNG fotoğrafı';
+        entry.done = (async () => {
+          for (const file of source) {
+            let bytes;
+            try {
+              bytes = new Uint8Array(await file.arrayBuffer());
+            } catch {
+              entry.problem = `"${file.name}" okunamadı. Dosya Google Drive gibi bir bulut klasöründeyse önce telefonunuza indirin, sonra yeniden seçin.`;
+              return;
+            }
+            const type = bytes.length ? Object.keys(SIGNATURES).find(key => SIGNATURES[key](bytes)) : undefined;
+            if (!type || !allowed.includes(type)) {
+              entry.problem = bytes.length
+                ? `"${file.name}" geçerli bir ${kind} değil; bozuk olabilir ya da bir web sayfası olarak kaydedilmiş olabilir. Lütfen belgeyi yeniden indirip seçin.`
+                : `"${file.name}" boş görünüyor. Lütfen belgeyi yeniden indirip seçin.`;
+              return;
+            }
+            // Named after its real content, so a JPG saved as ".pdf" still opens
+            const name = file.name.replace(/\.[^.]*$/, '') + '.' + type;
+            entry.copies.push(new File([bytes], name, { type: MIME_TYPES[type] }));
+          }
+        })();
+        entry.done.then(() => { if (readFiles.get(input) === entry) check(input, true); });
+        return entry;
+      };
+      const fileProblem = input => basicFileProblem(input) || readFiles.get(input)?.problem || '';
 
       const normalizeName = value => value.toLocaleLowerCase('tr-TR').replace(/\s+/g, ' ').trim();
       const sameName = (a, b) => normalizeName(a) === normalizeName(b);
@@ -1033,6 +1079,7 @@
         const empty = text.textContent;
         input.addEventListener('change', () => {
           const files = [...input.files];
+          readCopies(input);
           zone.classList.toggle('has-file', files.length > 0);
           if (!files.length) { text.textContent = empty; return; }
           const kb = files.reduce((total, file) => total + file.size, 0) / 1024;
@@ -1052,6 +1099,8 @@
         LIMIT_EXPIRED: 'Form şu anda yeni gönderim kabul etmiyor. Lütfen Kulüp ile iletişime geçin.',
         FORM_DISABLED: 'Form şu anda yeni gönderim kabul etmiyor. Lütfen Kulüp ile iletişime geçin.'
       };
+      // The SDK reports code 0 when the request got no answer at all (connection lost, unreadable file)
+      const NETWORK_MESSAGE = 'Bağlantı sırasında bir sorun oluştu ve bilgileriniz gönderilemedi. Lütfen internet bağlantınızı kontrol edip (mümkünse Wi-Fi ile) tekrar deneyin. Sorun sürerse komite@niluferrotaryburs.com adresine yazabilirsiniz.';
       const showError = message => {
         formError.textContent = message;
         formError.hidden = false;
@@ -1065,7 +1114,30 @@
           return;
         }
 
-        const data = new FormData(form);
+        // Wait for files still being read, then send the in-memory copies in the form's order
+        const fileInputs = [...form.querySelectorAll('input[type="file"]')].filter(input => !input.disabled && input.files.length);
+        const entries = fileInputs.map(input => {
+          const entry = readFiles.get(input);
+          const current = entry && entry.source.length === input.files.length && entry.source.every((file, i) => file === input.files[i]);
+          return current ? entry : readCopies(input);
+        });
+        button.disabled = true;
+        button.textContent = 'Dosyalar hazırlanıyor...';
+        await Promise.all(entries.map(entry => entry.done));
+        const unreadable = fileInputs.find(input => readFiles.get(input).problem);
+        if (unreadable) {
+          button.disabled = false;
+          button.textContent = 'Gönder';
+          check(unreadable, true);
+          unreadable.focus();
+          showError('Seçtiğiniz dosyalardan biri okunamadı. Lütfen işaretli alandaki dosyayı yeniden seçin.');
+          return;
+        }
+        const copies = new Map(fileInputs.map(input => [input.name, [...readFiles.get(input).copies]]));
+        const data = new FormData();
+        for (const [name, value] of new FormData(form)) {
+          data.append(name, value instanceof File && copies.has(name) ? copies.get(name).shift() : value);
+        }
         // Forminit validates phone numbers as E.164: 0(532)123-45-67 is sent as +905321234567
         data.set('fi-sender-phone', '+90' + phone.value.replace(/\D/g, '').slice(1));
         data.set('fi-text-imza', document.getElementById('imza').value.replace(/\s+/g, ' ').trim());
@@ -1075,7 +1147,6 @@
         // GNO is sent with two decimals: 3,5 → 3,50
         if (!gno.disabled) data.set('fi-text-gno', Number(gno.value.replace(',', '.')).toFixed(2).replace('.', ','));
 
-        button.disabled = true;
         button.textContent = 'Gönderiliyor...';
         let error;
         try {
@@ -1087,7 +1158,8 @@
         button.textContent = 'Gönder';
 
         if (error) {
-          showError(`${serverMessages[error.error] || 'Bilgileriniz gönderilemedi. Lütfen tekrar deneyin.'} (Hata: ${error.message})`);
+          const message = error.code === 0 ? NETWORK_MESSAGE : serverMessages[error.error] || 'Bilgileriniz gönderilemedi. Lütfen tekrar deneyin.';
+          showError(`${message} (Hata: ${error.message})`);
           return;
         }
         // replace() keeps the submitted form out of the back history
