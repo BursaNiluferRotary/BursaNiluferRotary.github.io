@@ -94,7 +94,6 @@
     .panels {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      align-items: start; /* each panel is as tall as its own content */
       gap: 1.5rem;
       margin-top: clamp(2rem, 4vh, 3rem);
     }
@@ -135,15 +134,21 @@
     }
     .panel .when { font-weight: 600; color: var(--ink); }
 
+    /* The boxes stretch so both panels end at the same height and the buttons line up */
     .stats {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      flex: 1;
       gap: 0.75rem;
       width: 100%;
       margin: 1.5rem 0 1.75rem;
     }
 
     .stat {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 7rem;
       padding: 1.125rem 1rem 1rem;
       background: rgba(255, 255, 255, 0.7);
       border: 1px solid rgba(23, 69, 143, 0.1);
@@ -177,15 +182,11 @@
     .poster {
       display: block;
       width: min(100%, 18rem);
+      height: auto;
       margin: 1.375rem 0 1.75rem;
       border-radius: 0.75rem;
-      overflow: hidden;
       box-shadow: 0 10px 30px -12px rgba(15, 31, 61, 0.45);
-      transition: transform 0.2s, box-shadow 0.2s;
     }
-    .poster img { display: block; width: 100%; height: auto; }
-    .poster:hover { transform: translateY(-2px); box-shadow: 0 16px 36px -14px rgba(15, 31, 61, 0.5); }
-    .poster:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 
     .cta {
       display: inline-flex;
@@ -293,9 +294,7 @@
         <p>Rotary'nin gençlik liderliği programı RYLA kapsamında, daha sürdürülebilir bir yarın için düzenlediğimiz konferans.</p>
         <p class="when">7-8 Kasım 2026 · Euro Park Otel, Bursa</p>
 
-        <a class="poster" href="ryla.html">
-          <img src="ryla-2026.jpg" alt="RYLA Geleceğin Gıdası afişi: daha sürdürülebilir bir yarın için, 7-8 Kasım 2026, Euro Park Otel, Bursa" width="593" height="900">
-        </a>
+        <img class="poster" src="ryla-2026.jpg" alt="RYLA Geleceğin Gıdası afişi: daha sürdürülebilir bir yarın için, 7-8 Kasım 2026, Euro Park Otel, Bursa" width="593" height="900">
 
         <a class="cta" href="ryla.html">RYLA Kayıt Formu <span aria-hidden="true">→</span></a>
       </section>
