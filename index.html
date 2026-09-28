@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bursa Nilüfer Rotary Kulübü | Üniversite Öğrenci Bursları</title>
-  <meta name="description" content="Bursa Nilüfer Rotary Kulübü Üniversite Öğrenci Bursları: 25+ sene, 450+ öğrenci desteği.">
+  <title>Bursa Nilüfer Rotary Kulübü | Öğrenci Bursları ve RYLA</title>
+  <meta name="description" content="Bursa Nilüfer Rotary Kulübü: 25+ sene, 450+ öğrenci desteği ile üniversite öğrenci bursları ve 7-8 Kasım 2026'da Bursa'da düzenlenecek RYLA “Geleceğin Gıdası” konferansı.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Bursa Nilüfer Rotary Kulübü">
-  <meta property="og:description" content="Üniversite Öğrenci Bursları: 25+ sene, 450+ öğrenci desteği.">
+  <meta property="og:description" content="Üniversite Öğrenci Bursları ve RYLA “Geleceğin Gıdası” konferansı (7-8 Kasım 2026, Bursa).">
   <meta name="theme-color" content="#17458f">
   <style>
     :root {
@@ -80,9 +80,9 @@
     }
 
     h1 {
-      max-width: 15ch;
+      max-width: 18ch;
       margin: 0;
-      font-size: clamp(2.75rem, 1.6rem + 5vw, 6rem);
+      font-size: clamp(2.5rem, 1.6rem + 3.5vw, 4.5rem);
       font-weight: 800;
       line-height: 1.02;
       letter-spacing: -0.03em;
@@ -90,40 +90,69 @@
       text-wrap: balance;
     }
 
-    .subtitle {
-      margin: 1.25rem 0 0;
-      font-size: clamp(1.25rem, 0.95rem + 1.2vw, 2rem);
-      font-weight: 500;
-    }
-
-    .stats {
+    /* Left column: scholarships. Right column: the RYLA conference. */
+    .panels {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 18rem));
-      gap: 1rem;
-      margin-top: clamp(2rem, 5vh, 3.5rem);
+      grid-template-columns: 1fr 1fr;
+      align-items: start; /* each panel is as tall as its own content */
+      gap: 1.5rem;
+      margin-top: clamp(2rem, 4vh, 3rem);
     }
 
-    .stat {
-      padding: 1.5rem 1.5rem 1.375rem;
+    .panel {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1.75rem;
       background: rgba(255, 255, 255, 0.75);
       border: 1px solid rgba(23, 69, 143, 0.1);
       border-radius: 1.25rem;
       box-shadow: 0 1px 2px rgba(15, 31, 61, 0.04), 0 16px 36px -16px rgba(15, 31, 61, 0.2);
       backdrop-filter: blur(8px);
     }
-    .stat::before {
+    .panel::before {
       content: "";
       display: block;
       width: 2.5rem;
       height: 0.25rem;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.125rem;
       border-radius: 999px;
       background: var(--gold);
+    }
+    .panel h2 {
+      margin: 0;
+      font-size: clamp(1.375rem, 1.1rem + 1vw, 1.875rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--blue);
+      text-wrap: balance;
+    }
+    .panel p {
+      margin: 0.625rem 0 0;
+      color: var(--muted);
+      text-wrap: pretty;
+    }
+    .panel .when { font-weight: 600; color: var(--ink); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+      width: 100%;
+      margin: 1.5rem 0 1.75rem;
+    }
+
+    .stat {
+      padding: 1.125rem 1rem 1rem;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(23, 69, 143, 0.1);
+      border-radius: 1rem;
     }
 
     .stat-value {
       margin: 0;
-      font-size: clamp(2.5rem, 1.75rem + 3.5vw, 4.5rem);
+      font-size: clamp(2rem, 1.3rem + 2.2vw, 3.25rem);
       font-weight: 800;
       line-height: 1;
       letter-spacing: -0.03em;
@@ -137,20 +166,33 @@
     .count { display: inline-block; text-align: right; }
 
     .stat-label {
-      margin: 0.75rem 0 0;
-      font-size: 0.875rem;
+      margin: 0.625rem 0 0;
+      font-size: 0.8125rem;
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--muted);
     }
 
+    .poster {
+      display: block;
+      width: min(100%, 18rem);
+      margin: 1.375rem 0 1.75rem;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 10px 30px -12px rgba(15, 31, 61, 0.45);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .poster img { display: block; width: 100%; height: auto; }
+    .poster:hover { transform: translateY(-2px); box-shadow: 0 16px 36px -14px rgba(15, 31, 61, 0.5); }
+    .poster:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
     .cta {
       display: inline-flex;
       align-items: center;
       align-self: flex-start;
       gap: 0.625rem;
-      margin-top: 1.75rem;
+      margin-top: auto;
       padding: 0.95rem 1.6rem;
       font-size: 1.0625rem;
       font-weight: 700;
@@ -193,11 +235,19 @@
       white-space: nowrap;
     }
 
+    @media (max-width: 52rem) {
+      .panels { grid-template-columns: 1fr; }
+      .panel { align-items: stretch; }
+      .poster { margin-inline: auto; }
+      .cta { align-self: flex-start; }
+    }
+
     @media (max-width: 40rem) {
       .hero { padding-top: 3rem; }
-      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
-      .stat { padding: 1.25rem 1rem 1.125rem; }
+      .panel { padding: 1.375rem; }
+      .stat { padding: 1rem 0.875rem 0.875rem; }
       .stat-label { font-size: 0.75rem; }
+      .cta { padding: 0.85rem 1.25rem; font-size: 1rem; }
       .brand img { height: 3rem; }
       .contact { font-size: 0.8125rem; }
     }
@@ -206,9 +256,7 @@
       .hero > *, .brand { animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
       .hero > :nth-child(2) { animation-delay: 0.08s; }
       .hero > :nth-child(3) { animation-delay: 0.16s; }
-      .hero > :nth-child(4) { animation-delay: 0.26s; }
-      .hero > :nth-child(5) { animation-delay: 0.34s; }
-      .brand { animation-delay: 0.45s; }
+      .brand { animation-delay: 0.3s; }
       body::before { animation: drift 22s ease-in-out infinite alternate; }
       body::after { animation: drift 26s ease-in-out infinite alternate-reverse; }
     }
@@ -220,20 +268,38 @@
   <main class="hero">
     <div class="accent" aria-hidden="true"></div>
     <h1>Bursa Nilüfer Rotary Kulübü</h1>
-    <p class="subtitle">Üniversite Öğrenci Bursları</p>
 
-    <section class="stats" aria-label="Rakamlarla burs desteği">
-      <div class="stat">
-        <p class="stat-value" aria-hidden="true"><span class="count" data-target="25">25</span>+</p>
-        <p class="stat-label"><span class="sr-only">25+ </span>sene</p>
-      </div>
-      <div class="stat">
-        <p class="stat-value" aria-hidden="true"><span class="count" data-target="450">450</span>+</p>
-        <p class="stat-label"><span class="sr-only">450+ </span>öğrenci desteği</p>
-      </div>
-    </section>
+    <div class="panels">
+      <section class="panel" aria-labelledby="burs-baslik">
+        <h2 id="burs-baslik">Üniversite Öğrenci Bursları</h2>
+        <p>Üniversite öğrencilerine 25 seneyi aşkın süredir eğitim desteği sağlıyoruz.</p>
 
-    <a class="cta" href="basvuru.html">Öğrenci Bilgi Formu <span aria-hidden="true">→</span></a>
+        <div class="stats">
+          <div class="stat">
+            <p class="stat-value" aria-hidden="true"><span class="count" data-target="25">25</span>+</p>
+            <p class="stat-label"><span class="sr-only">25+ </span>sene</p>
+          </div>
+          <div class="stat">
+            <p class="stat-value" aria-hidden="true"><span class="count" data-target="450">450</span>+</p>
+            <p class="stat-label"><span class="sr-only">450+ </span>öğrenci desteği</p>
+          </div>
+        </div>
+
+        <a class="cta" href="basvuru.html">Öğrenci Bursu Bilgi Formu <span aria-hidden="true">→</span></a>
+      </section>
+
+      <section class="panel" aria-labelledby="ryla-baslik">
+        <h2 id="ryla-baslik">RYLA Konferansı: Geleceğin Gıdası</h2>
+        <p>Rotary'nin gençlik liderliği programı RYLA kapsamında, daha sürdürülebilir bir yarın için düzenlediğimiz konferans.</p>
+        <p class="when">7-8 Kasım 2026 · Euro Park Otel, Bursa</p>
+
+        <a class="poster" href="ryla.html">
+          <img src="ryla-2026.jpg" alt="RYLA Geleceğin Gıdası afişi: daha sürdürülebilir bir yarın için, 7-8 Kasım 2026, Euro Park Otel, Bursa" width="593" height="900">
+        </a>
+
+        <a class="cta" href="ryla.html">RYLA Kayıt Formu <span aria-hidden="true">→</span></a>
+      </section>
+    </div>
   </main>
 
   <footer class="brand">
