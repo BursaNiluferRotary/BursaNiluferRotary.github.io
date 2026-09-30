@@ -131,6 +131,18 @@
     .upload-text { display: block; font-weight: 600; color: var(--accent); overflow-wrap: anywhere; }
     .upload-hint { display: block; font-size: 0.875rem; color: var(--muted); }
 
+    fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+    legend { display: block; margin-bottom: 0.375rem; padding: 0; font-weight: 600; }
+
+    /* Document checklist: two columns, each ticked item opens its upload box below */
+    .doc-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; }
+    .doc-choices label { display: flex; align-items: flex-start; gap: 0.5rem; margin: 0; font-weight: 400; font-size: 0.9375rem; }
+    .doc-choices input { flex: none; width: 1.0625rem; height: 1.0625rem; margin: 0.2rem 0 0; accent-color: var(--accent); }
+    .doc-uploads { display: grid; gap: 1rem; }
+    .doc-uploads:empty, .doc-uploads:not(:has(> .field:not([hidden]))) { display: none; }
+    .doc-uploads .field > label { font-weight: 600; }
+    .doc-uploads .upload { padding: 0.875rem 0.75rem; }
+
     .consent { display: flex; align-items: flex-start; gap: 0.625rem; margin: 0; font-weight: 400; }
     .consent input { flex: none; width: 1.125rem; height: 1.125rem; margin: 0.15rem 0 0; accent-color: var(--accent); }
     .consent a { color: var(--accent); font-weight: 600; }
@@ -180,7 +192,8 @@
 
     @media (max-width: 600px) {
       main { padding-top: 2.5rem; }
-      form { padding: 1.25rem; grid-template-columns: 1fr; }
+      form, .doc-choices { grid-template-columns: 1fr; }
+      form { padding: 1.25rem; }
       button { justify-self: stretch; }
       .brand img { height: 3rem; }
       .contact { font-size: 0.8125rem; }
@@ -192,7 +205,7 @@
     <div class="accent" aria-hidden="true"></div>
     <h1>Bursa Nilüfer Rotary Kulübü</h1>
     <p class="subtitle">Ek Belge Gönderme</p>
-    <p class="intro">Burs başvurunuzu daha önce gönderdiyseniz ve bir belgeniz eksik, okunamaz ya da hatalıysa bu formu kullanın. Başvurunuzu yeniden doldurmanıza gerek yoktur. Birden fazla türde belge göndermeniz gerekiyorsa formu her belge türü için ayrı doldurun.</p>
+    <p class="intro">Burs başvurunuzu daha önce gönderdiyseniz ve belgelerinizden bazıları eksik, okunamaz ya da hatalıysa bu formu kullanın. Göndermek istediğiniz belgeleri işaretleyin ve hepsini tek seferde yükleyin; başvurunuzu yeniden doldurmanıza gerek yoktur.</p>
 
     <noscript><p class="notice form-error">Formu gönderebilmek için tarayıcınızda JavaScript'in açık olması gerekir.</p></noscript>
 
@@ -225,44 +238,15 @@
       </div>
       <p class="field-note full" id="eslestirme-notu" style="margin-top: -0.75rem;">Belgenizi başvurunuzla eşleştirebilmemiz için başvuruda kullandığınız TC kimlik numarası ve e-posta adresini yazın.</p>
 
-      <div class="field full">
-        <label for="belge-turu">Gönderdiğiniz Belge</label>
-        <select id="belge-turu" name="fi-select-belge_turu" required>
-          <option value="" selected disabled>Seçiniz</option>
-          <option>Anne ve Babanın Gelir Belgeleri</option>
-          <option>Öğrenci Belgesi</option>
-          <option>Adli Sicil Kaydı</option>
-          <option>Öğrencinin Yerleşim Yeri ve Diğer Adres Belgesi</option>
-          <option>Ailenin Yerleşim Yeri ve Diğer Adres Belgesi</option>
-          <option>Anne ve Babanın Tapu Bilgileri Sorgulaması</option>
-          <option>Anne ve Babanın Araç Kaydı Sorgulaması</option>
-          <option>Vukuatlı Nüfus Kayıt Örneği</option>
-          <option>Başka Burs Almadığına Dair Beyan</option>
-          <option>Kimlik Kartı Fotokopisi</option>
-          <option>Vesikalık Fotoğraf</option>
-          <option>ÖSYM Yerleştirme Sonuç Belgesi</option>
-          <option>Banka Dekontu</option>
-          <option>Transkript</option>
-          <option>Diğer</option>
-        </select>
+      <!-- The checkboxes and upload boxes are built by the script from the DOCUMENTS list -->
+      <fieldset class="field full">
+        <legend>Göndereceğiniz Belgeler</legend>
+        <p class="field-note" style="margin: 0 0 0.75rem;">İşaretlediğiniz her belge için aşağıda bir yükleme alanı açılır. Her dosya PDF, JPG veya PNG biçiminde ve en fazla 1 MB olmalıdır.</p>
+        <div class="doc-choices" id="belge-secimi"></div>
         <span class="field-error" hidden></span>
-      </div>
+      </fieldset>
 
-      <div class="field full" id="diger-alani" hidden>
-        <label for="belge-diger">Belgenin Adı</label>
-        <input id="belge-diger" name="fi-text-belge_diger" type="text" required disabled>
-        <span class="field-error" hidden></span>
-      </div>
-
-      <div class="field full">
-        <label for="belgeler">Belge</label>
-        <div class="upload">
-          <input id="belgeler" name="fi-file-belgeler[]" type="file" accept=".pdf,.jpg,.jpeg,.png" multiple required data-rule="dosya" data-max-files="4" aria-describedby="dosya-kurali">
-          <span class="upload-text" aria-hidden="true">Dosya seçin veya sürükleyin</span>
-          <span class="upload-hint" id="dosya-kurali">PDF, JPG veya PNG; her dosya en fazla 1 MB, en fazla 4 dosya</span>
-        </div>
-        <span class="field-error" hidden></span>
-      </div>
+      <div class="full doc-uploads" id="yuklemeler"></div>
 
       <div class="field full">
         <label for="aciklama">Açıklama <span class="optional">(varsa)</span></label>
@@ -294,36 +278,82 @@
   <script src="https://forminit.com/sdk/v1/forminit.js"></script>
   <script>
     (() => {
+      // Sends to the scholarship form; each document goes into the block the application uses for it
       const FORM_ID = '4oh74819xj4';
-
-      // Each document goes into the block the application form uses for it, with the same file limit
-      const TARGETS = {
-        'Anne ve Babanın Gelir Belgeleri': ['gelir_belgeleri', 4],
-        'Öğrenci Belgesi': ['ogrenci_belgesi', 1],
-        'Adli Sicil Kaydı': ['adli_sicil', 1],
-        'Öğrencinin Yerleşim Yeri ve Diğer Adres Belgesi': ['yerlesim_yeri_belgesi', 1],
-        'Ailenin Yerleşim Yeri ve Diğer Adres Belgesi': ['aile_yerlesim_yeri_belgesi', 2],
-        'Anne ve Babanın Tapu Bilgileri Sorgulaması': ['tapu_sorgulama', 2],
-        'Anne ve Babanın Araç Kaydı Sorgulaması': ['arac_kaydi', 2],
-        'Vukuatlı Nüfus Kayıt Örneği': ['nufus_kayit_ornegi', 1],
-        'Başka Burs Almadığına Dair Beyan': ['baska_burs_beyani', 1],
-        'Kimlik Kartı Fotokopisi': ['kimlik', 1],
-        'Vesikalık Fotoğraf': ['vesikalik_fotograf', 1],
-        'ÖSYM Yerleştirme Sonuç Belgesi': ['osym_yerlestirme', 1],
-        'Banka Dekontu': ['banka_dekontu', 1],
-        'Transkript': ['transkript', 1],
-        'Diğer': ['diger_belgeler', 4]
-      };
-      const targetName = () => {
-        const [block, max] = TARGETS[docType.value] || ['diger_belgeler', 4];
-        return max > 1 ? `fi-file-${block}[]` : `fi-file-${block}`;
-      };
       const MAX_MB = 1;
+      const MAX_TOTAL_MB = 24; // Forminit accepts at most 25 MB of files per submission
       const form = document.getElementById('ek-belge-form');
       const button = form.querySelector('button[type="submit"]');
       const formError = document.getElementById('gonderim-hatasi');
-      const fileInput = document.getElementById('belgeler');
-      const docType = document.getElementById('belge-turu');
+      const choiceBox = document.getElementById('belge-secimi');
+      const uploadBox = document.getElementById('yuklemeler');
+
+      // [label, Forminit block, max files, photo only] — the same blocks and limits as basvuru.html
+      const DOCUMENTS = [
+        ['Anne ve Babanın Gelir Belgeleri', 'gelir_belgeleri', 4],
+        ['Öğrenci Belgesi', 'ogrenci_belgesi', 1],
+        ['Adli Sicil Kaydı', 'adli_sicil', 1],
+        ['Öğrencinin Yerleşim Yeri ve Diğer Adres Belgesi', 'yerlesim_yeri_belgesi', 1],
+        ['Ailenin Yerleşim Yeri ve Diğer Adres Belgesi', 'aile_yerlesim_yeri_belgesi', 2],
+        ['Anne ve Babanın Tapu Bilgileri Sorgulaması', 'tapu_sorgulama', 2],
+        ['Anne ve Babanın Araç Kaydı Sorgulaması', 'arac_kaydi', 2],
+        ['Vukuatlı Nüfus Kayıt Örneği', 'nufus_kayit_ornegi', 1],
+        ['Başka Burs Almadığına Dair Beyan', 'baska_burs_beyani', 1],
+        ['Kimlik Kartı Fotokopisi', 'kimlik', 1],
+        ['Vesikalık Fotoğraf', 'vesikalik_fotograf', 1, true],
+        ['ÖSYM Yerleştirme Sonuç Belgesi', 'osym_yerlestirme', 1],
+        ['Banka Dekontu', 'banka_dekontu', 1],
+        ['Transkript', 'transkript', 1],
+        ['Diğer', 'diger_belgeler', 4]
+      ];
+
+      const element = (tag, props = {}, ...children) => {
+        const el = Object.assign(document.createElement(tag), props);
+        el.append(...children);
+        return el;
+      };
+      const errorBox = () => element('span', { className: 'field-error', hidden: true });
+
+      // One checkbox and one (hidden, disabled) upload box per document; disabled boxes are neither validated nor sent
+      const rows = DOCUMENTS.map(([label, block, max, photoOnly]) => {
+        const checkbox = element('input', { type: 'checkbox', name: 'fi-checkbox-belge_turu', value: label });
+        checkbox.dataset.missing = 'Lütfen göndereceğiniz en az bir belgeyi işaretleyin.';
+        choiceBox.append(element('label', {}, checkbox, ' ' + label));
+
+        const hintText = (photoOnly ? 'JPG veya PNG' : 'PDF, JPG veya PNG')
+          + (max > 1 ? `; her dosya en fazla 1 MB, en fazla ${max} dosya` : '; tek dosya, en fazla 1 MB');
+        const input = element('input', {
+          id: `dosya-${block}`,
+          name: max > 1 ? `fi-file-${block}[]` : `fi-file-${block}`,
+          type: 'file',
+          accept: photoOnly ? '.jpg,.jpeg,.png' : '.pdf,.jpg,.jpeg,.png',
+          multiple: max > 1,
+          required: true,
+          disabled: true
+        });
+        input.dataset.rule = 'dosya';
+        input.dataset.maxFiles = String(max);
+        input.setAttribute('aria-describedby', `ipucu-${block}`);
+        const zone = element('div', { className: 'upload' },
+          input,
+          element('span', { className: 'upload-text' }, 'Dosya seçin veya sürükleyin'),
+          element('span', { className: 'upload-hint', id: `ipucu-${block}` }, hintText));
+        zone.querySelector('.upload-text').setAttribute('aria-hidden', 'true');
+        const field = element('div', { className: 'field', hidden: true },
+          element('label', { htmlFor: input.id }, label), zone, errorBox());
+
+        // "Diğer" also asks what the document is
+        let nameField = null;
+        if (block === 'diger_belgeler') {
+          const nameInput = element('input', { id: 'belge-diger', name: 'fi-text-belge_diger', type: 'text', required: true, disabled: true, placeholder: 'Örn. Sağlık raporu' });
+          nameField = element('div', { className: 'field', hidden: true },
+            element('label', { htmlFor: 'belge-diger' }, 'Diğer Belgenin Adı'), nameInput, errorBox());
+          uploadBox.append(nameField);
+        }
+        uploadBox.append(field);
+        return { checkbox, field, input, zone, nameField };
+      });
+      const checkboxes = rows.map(row => row.checkbox);
 
       // 11-digit TC number while typing, with the official checksum
       const tcInput = document.getElementById('tc');
@@ -338,14 +368,14 @@
         return (tenth + 10) % 10 === d[9] && d.slice(0, 10).reduce((a, b) => a + b) % 10 === d[10];
       };
 
-      // File types follow the input's accept list (the photo takes JPG/PNG only)
+      // File types follow each input's accept list (the photo takes JPG/PNG only)
       const MIME_TYPES = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png' };
       const acceptedExtensions = input => input.accept.split(',').map(ext => ext.trim().replace('.', '').toLowerCase());
       const basicFileProblem = input => {
         const files = [...input.files];
         const allowed = acceptedExtensions(input);
         const maxFiles = Number(input.dataset.maxFiles || 1);
-        if (files.length > maxFiles) return `En fazla ${maxFiles} dosya seçebilirsiniz.`;
+        if (files.length > maxFiles) return maxFiles === 1 ? 'Bu belge için tek bir dosya seçin.' : `En fazla ${maxFiles} dosya seçebilirsiniz.`;
         for (const file of files) {
           const extension = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '';
           const typeOk = allowed.includes(extension) || allowed.some(ext => MIME_TYPES[ext] === file.type);
@@ -412,7 +442,6 @@
         if (el.validity.valueMissing) {
           message = el.dataset.missing ? el.dataset.missing
             : el.type === 'file' ? 'Lütfen bir dosya seçin.'
-            : el.tagName === 'SELECT' ? 'Lütfen bir seçenek belirleyin.'
             : 'Lütfen bu alanı doldurun.';
         } else if (el.validity.typeMismatch) {
           message = 'Lütfen geçerli bir e-posta adresi girin.';
@@ -420,7 +449,7 @@
           message = rules[el.dataset.rule](el);
         }
         el.setCustomValidity(message);
-        const box = el.closest('.field')?.querySelector('.field-error');
+        const box = el.closest('.field')?.querySelector(':scope > .field-error');
         if (box && (show || !message || !box.hidden)) {
           box.textContent = message;
           box.hidden = !message;
@@ -428,49 +457,49 @@
           else el.removeAttribute('aria-invalid');
         }
       };
-      form.addEventListener('input', e => check(e.target, false));
-      form.addEventListener('change', e => check(e.target, true));
+      const group = el => el.name === 'fi-checkbox-belge_turu' ? checkboxes : [el];
+      form.addEventListener('input', e => group(e.target).forEach(el => check(el, false)));
+      form.addEventListener('change', e => group(e.target).forEach(el => check(el, true)));
       form.addEventListener('invalid', e => check(e.target, true), true);
       button.addEventListener('click', () => {
         [...form.elements].forEach(el => check(el, false));
       });
 
-      // "Diğer" asks for the document's name; a photo only accepts JPG/PNG
-      const otherField = document.getElementById('diger-alani');
-      const otherInput = document.getElementById('belge-diger');
-      docType.addEventListener('change', () => {
-        const other = docType.value === 'Diğer';
-        otherField.hidden = !other;
-        otherInput.disabled = !other; // disabled fields are neither validated nor sent
-        if (!other) {
-          otherField.querySelector('.field-error').hidden = true;
-          otherInput.removeAttribute('aria-invalid');
-        }
-        const photo = docType.value === 'Vesikalık Fotoğraf';
-        const max = (TARGETS[docType.value] || [, 4])[1];
-        fileInput.accept = photo ? '.jpg,.jpeg,.png' : '.pdf,.jpg,.jpeg,.png';
-        fileInput.multiple = max > 1;
-        fileInput.dataset.maxFiles = String(max);
-        document.getElementById('dosya-kurali').textContent = (photo ? 'JPG veya PNG' : 'PDF, JPG veya PNG')
-          + (max > 1 ? `; her dosya en fazla 1 MB, en fazla ${max} dosya` : '; tek dosya, en fazla 1 MB');
-        if (fileInput.files.length) readCopies(fileInput);
-      });
+      // Ticking a document opens its upload box; at least one document must be ticked
+      const syncDocuments = () => {
+        const anyChecked = checkboxes.some(box => box.checked);
+        checkboxes.forEach(box => { box.required = !anyChecked; });
+        rows.forEach(({ checkbox, field, input, nameField }) => {
+          [field, nameField].filter(Boolean).forEach(part => {
+            const control = part.querySelector('input');
+            part.hidden = !checkbox.checked;
+            control.disabled = !checkbox.checked;
+            if (!checkbox.checked) {
+              part.querySelector('.field-error').hidden = true;
+              control.removeAttribute('aria-invalid');
+            }
+          });
+        });
+      };
+      checkboxes.forEach(box => box.addEventListener('change', syncDocuments));
+      syncDocuments();
 
-      // Upload area: show the chosen file(s) and highlight while dragging
-      const zone = fileInput.closest('.upload');
-      const zoneText = zone.querySelector('.upload-text');
-      const emptyText = zoneText.textContent;
-      fileInput.addEventListener('change', () => {
-        const files = [...fileInput.files];
-        readCopies(fileInput);
-        zone.classList.toggle('has-file', files.length > 0);
-        if (!files.length) { zoneText.textContent = emptyText; return; }
-        const kb = files.reduce((total, file) => total + file.size, 0) / 1024;
-        const size = kb < 1024 ? `${Math.ceil(kb)} KB` : `${(kb / 1024).toLocaleString('tr-TR', { maximumFractionDigits: 1 })} MB`;
-        zoneText.textContent = files.length === 1 ? `${files[0].name} (${size})` : `${files.length} dosya seçildi (${size})`;
+      // Upload areas: show the chosen file(s) and highlight while dragging
+      rows.forEach(({ input, zone }) => {
+        const text = zone.querySelector('.upload-text');
+        const empty = text.textContent;
+        input.addEventListener('change', () => {
+          const files = [...input.files];
+          readCopies(input);
+          zone.classList.toggle('has-file', files.length > 0);
+          if (!files.length) { text.textContent = empty; return; }
+          const kb = files.reduce((total, file) => total + file.size, 0) / 1024;
+          const size = kb < 1024 ? `${Math.ceil(kb)} KB` : `${(kb / 1024).toLocaleString('tr-TR', { maximumFractionDigits: 1 })} MB`;
+          text.textContent = files.length === 1 ? `${files[0].name} (${size})` : `${files.length} dosya seçildi (${size})`;
+        });
+        input.addEventListener('dragenter', () => zone.classList.add('dragging'));
+        ['dragleave', 'drop'].forEach(type => input.addEventListener(type, () => zone.classList.remove('dragging')));
       });
-      fileInput.addEventListener('dragenter', () => zone.classList.add('dragging'));
-      ['dragleave', 'drop'].forEach(type => fileInput.addEventListener(type, () => zone.classList.remove('dragging')));
 
       // Submission through the Forminit SDK
       const forminit = typeof Forminit === 'function' ? new Forminit() : null;
@@ -481,7 +510,7 @@
         FORM_DISABLED: 'Form şu anda yeni gönderim kabul etmiyor. Lütfen Kulüp ile iletişime geçin.'
       };
       // The SDK reports code 0 when the request got no answer at all (connection lost, unreadable file)
-      const NETWORK_MESSAGE = 'Bağlantı sırasında bir sorun oluştu ve belgeniz gönderilemedi. Lütfen internet bağlantınızı kontrol edip (mümkünse Wi-Fi ile) tekrar deneyin. Sorun sürerse nilufer@niluferrotary.club adresine yazabilirsiniz.';
+      const NETWORK_MESSAGE = 'Bağlantı sırasında bir sorun oluştu ve belgeleriniz gönderilemedi. Lütfen internet bağlantınızı kontrol edip (mümkünse Wi-Fi ile) tekrar deneyin. Sorun sürerse nilufer@niluferrotary.club adresine yazabilirsiniz.';
       const showError = message => {
         formError.textContent = message;
         formError.hidden = false;
@@ -495,26 +524,35 @@
           return;
         }
 
-        // Wait for files still being read, then send the in-memory copies
-        const current = readFiles.get(fileInput);
-        const upToDate = current && current.source.length === fileInput.files.length && current.source.every((file, i) => file === fileInput.files[i]);
-        const entry = upToDate ? current : readCopies(fileInput);
+        // Wait for files still being read, then send the in-memory copies in the form's order
+        const fileInputs = rows.map(row => row.input).filter(input => !input.disabled && input.files.length);
+        const entries = fileInputs.map(input => {
+          const entry = readFiles.get(input);
+          const current = entry && entry.source.length === input.files.length && entry.source.every((file, i) => file === input.files[i]);
+          return current ? entry : readCopies(input);
+        });
         button.disabled = true;
         button.textContent = 'Dosyalar hazırlanıyor...';
-        await entry.done;
-        if (entry.problem) {
+        await Promise.all(entries.map(entry => entry.done));
+        const unreadable = fileInputs.find(input => readFiles.get(input).problem);
+        const totalMb = fileInputs.flatMap(input => readFiles.get(input).copies).reduce((sum, file) => sum + file.size, 0) / 1024 / 1024;
+        if (unreadable || totalMb > MAX_TOTAL_MB) {
           button.disabled = false;
           button.textContent = 'Gönder';
-          check(fileInput, true);
-          fileInput.focus();
-          showError('Seçtiğiniz dosyalardan biri okunamadı. Lütfen dosyayı yeniden seçin.');
+          if (unreadable) {
+            check(unreadable, true);
+            unreadable.focus();
+            showError('Seçtiğiniz dosyalardan biri okunamadı. Lütfen işaretli alandaki dosyayı yeniden seçin.');
+          } else {
+            showError(`Seçtiğiniz dosyaların toplamı ${MAX_TOTAL_MB} MB'ı geçiyor. Lütfen belgeleri iki ayrı gönderimde yollayın.`);
+          }
           return;
         }
-        const copies = [...entry.copies];
+        const copies = new Map(fileInputs.map(input => [input.name, [...readFiles.get(input).copies]]));
         const data = new FormData();
         for (const [name, value] of new FormData(form)) {
           if (value instanceof File) {
-            if (name === fileInput.name) data.append(targetName(), copies.shift());
+            if (copies.has(name)) data.append(name, copies.get(name).shift());
           } else if (name === '_gotcha' || value.trim()) {
             data.append(name, value); // optional fields left blank are not sent
           }
@@ -531,7 +569,7 @@
         button.textContent = 'Gönder';
 
         if (error) {
-          const message = error.code === 0 ? NETWORK_MESSAGE : serverMessages[error.error] || 'Belgeniz gönderilemedi. Lütfen tekrar deneyin.';
+          const message = error.code === 0 ? NETWORK_MESSAGE : serverMessages[error.error] || 'Belgeleriniz gönderilemedi. Lütfen tekrar deneyin.';
           showError(`${message} (Hata: ${error.message})`);
           return;
         }
