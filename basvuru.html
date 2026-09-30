@@ -572,7 +572,7 @@
       </fieldset>
 
       <!-- Before going live: have this text reviewed by someone who knows KVKK -->
-      <details class="kvkk full">
+      <details class="kvkk full" id="kvkk">
         <summary>KVKK Aydınlatma Metni (okumak için tıklayın)</summary>
         <div class="kvkk-text">
           <p>Bursa Nilüfer Rotary Kulübü (“Kulüp”) olarak, 6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca veri sorumlusu sıfatıyla, bu formda paylaştığınız kişisel verileri aşağıda açıklanan şekilde işliyoruz.</p>
@@ -717,6 +717,8 @@
 
       <!-- Honeypot field (Forminit rejects submissions where it has a value) -->
       <input type="hidden" name="_gotcha" style="display:none !important">
+      <!-- Tells applications apart from ek-belge.html submissions, which go to the same Forminit form -->
+      <input type="hidden" name="fi-text-gonderim_turu" value="Başvuru">
 
       <button type="submit" disabled>Gönder</button>
       <p class="notice form-error full" id="gonderim-hatasi" role="alert" hidden></p>
@@ -732,6 +734,9 @@
   <script>
     (() => {
       const FORM_ID = '4oh74819xj4';
+
+      // basvuru.html#kvkk (linked from ek-belge.html) opens the notice straight away
+      if (location.hash === '#kvkk') document.getElementById('kvkk').open = true;
       const MAX_MB = 1;
       const form = document.getElementById('burs-form');
       const phone = document.getElementById('telefon');
